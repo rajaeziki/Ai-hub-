@@ -199,7 +199,12 @@ input,select,textarea{font:400 15.5px/1.4 var(--body);color:var(--ink);backgroun
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px color-mix(in srgb,var(--orange) 25%,transparent)}
 textarea{min-height:110px;resize:vertical}
 form .btn{grid-column:1/-1;padding:15px}
-.note{grid-column:1/-1;font-size:13px;color:var(--faint);text-align:center}
+.note{grid-column:1/-1;font-size:13.5px;color:var(--faint);text-align:center}
+.note.ok{color:var(--ok);font-weight:500}
+.note.err{color:#D14343}
+.note a{color:inherit}
+form .btn[disabled]{opacity:.6;cursor:wait;transform:none}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
 @media (max-width:900px){.contact{grid-template-columns:1fr}}
 @media (max-width:520px){form{grid-template-columns:1fr}}
 
@@ -462,8 +467,9 @@ footer{border-top:1px solid var(--line);margin-top:clamp(72px,9vw,120px)}
         </select>
       </div>
       <div class="field full"><label for="message">Message</label><textarea id="message" placeholder="A few words about your business and goals"></textarea></div>
-      <button class="btn btn-orange" type="submit">Book my free audit</button>
-      <p class="note" id="form-note">Submitting opens your email app with your request ready to send.</p>
+      <input class="hp" id="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <button class="btn btn-orange" type="submit" id="submit-btn">Book my free audit</button>
+      <p class="note" id="form-note" role="status">Your request goes directly to the AI Hub team.</p>
     </form>
   </section>
 </main>
@@ -493,8 +499,8 @@ footer{border-top:1px solid var(--line);margin-top:clamp(72px,9vw,120px)}
 </footer>
 
 <script>
-// Replace with AI Hub's real contact address
-const CONTACT_EMAIL = "your-email@example.com";
+// Form requests are delivered to this address by FormSubmit (formsubmit.co)
+const CONTACT_EMAIL = "rajaezikii@gmail.com";
 document.getElementById("mail-link").href = "mailto:" + CONTACT_EMAIL;
 
 const events = [
@@ -527,12 +533,45 @@ function tick() {
 }
 if (!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(tick, 3000);
 
-document.getElementById("contact-form").addEventListener("submit", e => {
+const form = document.getElementById("contact-form");
+const note = document.getElementById("form-note");
+const btn = document.getElementById("submit-btn");
+const v = id => document.getElementById(id).value.trim();
+
+form.addEventListener("submit", async e => {
   e.preventDefault();
-  const v = id => document.getElementById(id).value;
-  const body = `Name: ${v("name")}\nCompany: ${v("company")}\nEmail: ${v("email")}\nNeed: ${v("need")}\n\n${v("message")}`;
-  location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Free AI audit request")}&body=${encodeURIComponent(body)}`;
-  document.getElementById("form-note").textContent = "Your email app should now be open. Just press send.";
+  if (v("hp")) return; // bot filled the hidden field
+  btn.disabled = true;
+  btn.textContent = "Sending…";
+  note.className = "note";
+  note.textContent = "Sending your request…";
+  try {
+    const res = await fetch(`https://formsubmit.co/ajax/${CONTACT_EMAIL}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({
+        _subject: `New AI audit request from ${v("name")}`,
+        _template: "table",
+        _replyto: v("email"),
+        Name: v("name"),
+        Company: v("company"),
+        Email: v("email"),
+        "Wants to automate": v("need"),
+        Message: v("message")
+      })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || String(data.success) !== "true") throw new Error(data.message || "Request failed");
+    form.reset();
+    note.className = "note ok";
+    note.textContent = "Thank you! Your request was sent. We'll get back to you soon.";
+    btn.textContent = "Request sent ✓";
+  } catch (err) {
+    note.className = "note err";
+    note.innerHTML = `Your request couldn't be sent. Please try again or email us at <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>.`;
+    btn.disabled = false;
+    btn.textContent = "Book my free audit";
+  }
 });
 </script>
 </body>
