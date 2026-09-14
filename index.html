@@ -218,6 +218,43 @@ footer{border-top:1px solid var(--line);margin-top:clamp(72px,9vw,120px)}
 .foot ul a:hover{color:var(--ink)}
 .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-block:22px;border-top:1px solid var(--line);font-size:13.5px;color:var(--faint)}
 @media (max-width:760px){.foot{grid-template-columns:1fr 1fr}.foot>div:first-child{grid-column:1/-1}}
+
+/* chatbot */
+[hidden]{display:none!important}
+.cb-launch{position:fixed;right:20px;bottom:20px;z-index:50;display:flex;align-items:center;gap:12px}
+.cb-teaser{background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:14px 14px 4px 14px;padding:10px 14px;font:400 14px/1.4 var(--body);max-width:240px;text-align:left;cursor:pointer}
+.cb-fab{width:58px;height:58px;border-radius:50%;border:0;background:var(--ink);color:var(--orange);display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 30px -8px rgba(22,19,15,.45);transition:transform .15s}
+.cb-fab:hover{transform:scale(1.05)}
+.cb-fab .i-close,.cb-fab[aria-expanded="true"] .i-open{display:none}
+.cb-fab[aria-expanded="true"] .i-close{display:block}
+.cb-panel{position:fixed;right:20px;bottom:92px;z-index:51;width:min(390px,calc(100vw - 32px));height:min(580px,calc(100vh - 120px));display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:0 24px 60px -20px rgba(22,19,15,.35);overflow:hidden;animation:cbIn .2s ease}
+@keyframes cbIn{from{opacity:0;transform:translateY(10px)}}
+.cb-head{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--orange);color:#16130F}
+.cb-head .logo-mark{background:#16130F;color:#FF8A47}
+.cb-head strong{display:block;font:700 16px/1.2 var(--display)}
+.cb-head small{font-size:12.5px;display:flex;align-items:center;gap:6px}
+.cb-head small i{width:7px;height:7px;border-radius:50%;background:#16130F}
+.cb-close{margin-left:auto;background:transparent;border:0;color:#16130F;cursor:pointer;padding:6px;border-radius:8px;display:grid;place-items:center}
+.cb-close:hover{background:rgba(22,19,15,.1)}
+.cb-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.cb-msg{max-width:85%;padding:10px 14px;border-radius:14px;font-size:14.5px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.cb-msg.bot{background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px;align-self:flex-start}
+.cb-msg.user{background:var(--ink);color:var(--bg);border-bottom-right-radius:4px;align-self:flex-end}
+.cb-typing{display:inline-flex;gap:4px;align-items:center;padding:14px 16px}
+.cb-typing span{width:6px;height:6px;border-radius:50%;background:var(--faint);animation:cbDot 1s infinite}
+.cb-typing span:nth-child(2){animation-delay:.15s}
+.cb-typing span:nth-child(3){animation-delay:.3s}
+@keyframes cbDot{50%{opacity:.25;transform:translateY(-2px)}}
+.cb-cta{align-self:flex-start;font:500 13.5px/1 var(--body);padding:10px 14px;border-radius:999px;background:var(--orange);color:#16130F;border:0;cursor:pointer}
+.cb-chips{display:flex;flex-wrap:wrap;gap:6px}
+.cb-chips button{font:500 13px/1 var(--body);padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.cb-chips button:hover{border-color:var(--orange)}
+.cb-form{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:var(--surface)}
+.cb-form input{flex:1;min-width:0;border-radius:999px;padding:11px 16px}
+.cb-send{width:42px;height:42px;flex:none;border-radius:50%;border:0;background:var(--ink);color:var(--bg);display:grid;place-items:center;cursor:pointer}
+.cb-send[disabled]{opacity:.5;cursor:default}
+.cb-foot{margin:0;font-size:11.5px;color:var(--faint);text-align:center;padding:0 12px 10px;background:var(--surface)}
+@media (max-width:560px){.cb-teaser{display:none}.cb-launch{right:16px;bottom:16px}.cb-panel{right:16px;bottom:86px;height:calc(100vh - 110px)}}
 </style>
 </head>
 <body>
@@ -498,6 +535,28 @@ footer{border-top:1px solid var(--line);margin-top:clamp(72px,9vw,120px)}
   </div>
 </footer>
 
+<!-- CHATBOT -->
+<div class="cb-launch">
+  <button class="cb-teaser" id="cb-teaser" type="button">👋 Hi! Want to see what AI can do for your business?</button>
+  <button class="cb-fab" id="cb-fab" type="button" aria-label="Chat with the AI Hub assistant" aria-expanded="false" aria-controls="cb-panel">
+    <svg class="i-open" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M12 8.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z" fill="currentColor"/></svg>
+    <svg class="i-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+</div>
+<section class="cb-panel" id="cb-panel" role="dialog" aria-label="AI Hub assistant" hidden>
+  <header class="cb-head">
+    <span class="logo-mark">AI</span>
+    <div><strong>AI Hub Assistant</strong><small><i></i>Online · replies instantly</small></div>
+    <button class="cb-close" id="cb-close" type="button" aria-label="Close chat"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </header>
+  <div class="cb-body" id="cb-body" aria-live="polite"></div>
+  <form class="cb-form" id="cb-form">
+    <input id="cb-input" autocomplete="off" maxlength="1000" placeholder="Ask about AI for your business…" aria-label="Your message">
+    <button class="cb-send" id="cb-send" type="submit" aria-label="Send message"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button>
+  </form>
+  <p class="cb-foot">AI assistant · for a personal answer, book the free audit.</p>
+</section>
+
 <script>
 // Form requests are delivered to this address by FormSubmit (formsubmit.co)
 const CONTACT_EMAIL = "rajaezikii@gmail.com";
@@ -572,6 +631,173 @@ form.addEventListener("submit", async e => {
     btn.disabled = false;
     btn.textContent = "Book my free audit";
   }
+});
+
+/* ---------- Chatbot ----------
+   Uses the Claude-powered /api/chat function when it is deployed with an
+   ANTHROPIC_API_KEY; otherwise answers from the built-in knowledge below. */
+const cb = {
+  panel: document.getElementById("cb-panel"),
+  body: document.getElementById("cb-body"),
+  form: document.getElementById("cb-form"),
+  input: document.getElementById("cb-input"),
+  send: document.getElementById("cb-send"),
+  fab: document.getElementById("cb-fab"),
+  teaser: document.getElementById("cb-teaser")
+};
+const chatHistory = [];
+let aiMode = true, started = false, busy = false;
+
+const KB = [
+  { k: ["price", "pricing", "cost", "how much", "budget", "quote", "tarif", "prix", "combien", "coût", "devis"], cta: true,
+    a: "Every business is different, so the price depends on what you want to automate and which tools you use. The free AI audit gives you a clear proposal, with no commitment." },
+  { k: ["chatbot", "bot", "whatsapp", "customer", "support", "faq", "answer", "client"],
+    a: "We build chatbots that answer your customers 24/7 on your website or WhatsApp. They handle frequent questions, take bookings and pass complex requests to your team." },
+  { k: ["marketing", "campaign", "newsletter", "emailing", "social", "lead", "instagram", "promo"],
+    a: "We automate your marketing: email campaigns, lead follow-up, social media scheduling and reminders, so the right message reaches the right people at the right time." },
+  { k: ["automat", "process", "admin", "invoice", "task", "repetitive", "data entry", "factur", "tâche"],
+    a: "We automate repetitive work like invoice processing, data entry, scheduling, document sorting and email triage. Your team gets hours back every week for the work that matters." },
+  { k: ["data", "analytic", "dashboard", "report", "kpi", "forecast", "decision", "sales", "analyse"],
+    a: "We turn your data into clear dashboards, automated reports and forecasts, so every growth decision is based on numbers rather than guesswork." },
+  { k: ["tool", "integrat", "crm", "excel", "spreadsheet", "google", "connect", "software", "outil"],
+    a: "We connect AI to the tools you already use: email, WhatsApp, your website, spreadsheets, CRMs and social media. We review your setup during the free audit." },
+  { k: ["technical", "skill", "code", "developer", "difficult", "complicated", "compétence"],
+    a: "No technical skills are needed. We handle the setup, the integration and the training, and we explain everything in plain language." },
+  { k: ["how does", "how do", "how it works", "process", "step", "start", "begin", "comment", "étape", "commencer"],
+    a: "We work in four steps:\n1. Free discovery call\n2. AI audit & roadmap\n3. Build & integrate\n4. Measure & improve\nWe start small, prove the value, then scale what works." },
+  { k: ["audit", "free", "call", "meeting", "appointment", "book", "rendez", "rdv", "gratuit"], cta: true,
+    a: "The free AI audit starts with a discovery call about your business. You then get a short list of the automations with the biggest time and cost savings. You can book it with the form on this page." },
+  { k: ["contact", "email", "mail", "reach", "phone", "talk", "human", "person", "joindre", "appeler"], cta: true,
+    a: `You can leave your details in the form on this page, or email us at ${CONTACT_EMAIL}. We'll get back to you.` },
+  { k: ["who are", "about", "ai hub", "mission", "company", "startup", "qui"],
+    a: "AI Hub supports small businesses and startups in their digital transformation through AI and task automation. Our mission: make AI accessible and effective for every business, so you can focus on your growth and your customers." },
+  { k: ["thank", "merci", "great", "perfect", "super"], cta: true,
+    a: "You're welcome! If you'd like to go further, the free AI audit is the best next step." },
+  { k: ["hello", "hi", "hey", "bonjour", "salut", "salam", "good morning"],
+    a: "Hello! 👋 Ask me anything about automating tasks, chatbots, marketing or analytics for your business." }
+];
+const FALLBACK = "I'm not sure I understood. I can tell you about our services (automation, chatbots, marketing, analytics), how we work, pricing or the free audit. You can also leave your details in the form and our team will answer you personally.";
+const escapeRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const matchers = KB.map(item => item.k.map(k => k.length <= 3 ? new RegExp(`\\b${escapeRe(k)}\\b`, "i") : k));
+
+function localAnswer(text) {
+  const t = text.toLowerCase();
+  let best = null, top = 0;
+  KB.forEach((item, i) => {
+    const score = matchers[i].reduce((n, m) => n + ((typeof m === "string" ? t.includes(m) : m.test(t)) ? 1 : 0), 0);
+    if (score > top) { top = score; best = item; }
+  });
+  return best ? { text: best.a, cta: !!best.cta } : { text: FALLBACK, cta: true };
+}
+
+function scrollChat() { cb.body.scrollTop = cb.body.scrollHeight; }
+function addMsg(role, text) {
+  const d = document.createElement("div");
+  d.className = `cb-msg ${role}`;
+  d.textContent = text;
+  cb.body.append(d);
+  scrollChat();
+}
+function addCta() {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "cb-cta";
+  b.textContent = "Book my free audit →";
+  b.addEventListener("click", () => {
+    closeChat();
+    document.getElementById("contact").scrollIntoView({ behavior: "smooth" });
+    setTimeout(() => document.getElementById("name").focus({ preventScroll: true }), 700);
+  });
+  cb.body.append(b);
+  scrollChat();
+}
+function addChips() {
+  const wrap = document.createElement("div");
+  wrap.className = "cb-chips";
+  ["What can you automate?", "How much does it cost?", "How does it work?", "Book a free audit"].forEach(label => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = label;
+    b.addEventListener("click", () => ask(label === "Book a free audit" ? "I'd like to book a free audit" : label));
+    wrap.append(b);
+  });
+  cb.body.append(wrap);
+  scrollChat();
+}
+
+function openChat() {
+  cb.panel.hidden = false;
+  cb.teaser.hidden = true;
+  cb.fab.setAttribute("aria-expanded", "true");
+  if (!started) {
+    started = true;
+    addMsg("bot", "Hi! 👋 I'm the AI Hub assistant. I can explain how AI and automation can save your business time. What would you like to know?");
+    addChips();
+  }
+  cb.input.focus();
+}
+function closeChat() {
+  cb.panel.hidden = true;
+  cb.fab.setAttribute("aria-expanded", "false");
+}
+
+async function ask(raw) {
+  const text = raw.trim();
+  if (!text || busy) return;
+  busy = true;
+  cb.send.disabled = true;
+  cb.body.querySelector(".cb-chips")?.remove();
+  addMsg("user", text);
+  chatHistory.push({ role: "user", content: text });
+
+  const typing = document.createElement("div");
+  typing.className = "cb-msg bot cb-typing";
+  typing.setAttribute("aria-label", "Assistant is typing");
+  typing.innerHTML = "<span></span><span></span><span></span>";
+  cb.body.append(typing);
+  scrollChat();
+
+  let reply = null, cta = false;
+  if (aiMode) {
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: chatHistory })
+      });
+      if (res.ok) reply = (await res.json()).reply || null;
+      else if ([404, 405, 503].includes(res.status)) aiMode = false; // AI not deployed: use built-in answers
+    } catch {
+      aiMode = false;
+    }
+    if (reply) cta = /audit|form|formulaire|devis|quote/i.test(reply);
+  }
+  if (!reply) {
+    const local = localAnswer(text);
+    reply = local.text;
+    cta = local.cta;
+    await new Promise(r => setTimeout(r, 450));
+  }
+  reply = reply.replace(/\*\*(.+?)\*\*/g, "$1");
+
+  typing.remove();
+  addMsg("bot", reply);
+  chatHistory.push({ role: "assistant", content: reply });
+  if (cta) addCta();
+  busy = false;
+  cb.send.disabled = false;
+  cb.input.focus();
+}
+
+cb.fab.addEventListener("click", () => (cb.panel.hidden ? openChat() : closeChat()));
+cb.teaser.addEventListener("click", openChat);
+document.getElementById("cb-close").addEventListener("click", () => { closeChat(); cb.fab.focus(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !cb.panel.hidden) { closeChat(); cb.fab.focus(); } });
+cb.form.addEventListener("submit", e => {
+  e.preventDefault();
+  const value = cb.input.value;
+  cb.input.value = "";
+  ask(value);
 });
 </script>
 </body>

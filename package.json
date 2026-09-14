@@ -1,0 +1,9 @@
+{
+  "name": "aihub-website",
+  "private": true,
+  "type": "module",
+  "description": "AI Hub website with a Claude-powered chatbot (Vercel)",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.125.0"
+  }
+}
